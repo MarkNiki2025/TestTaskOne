@@ -2,17 +2,20 @@
 import Button from "../../components/ui/Button";
 import Header from "../../components/header/Header";
 import Select from "../../components/ui/Select";
-import { users } from "../../data/users";
 import Textarea from "../../components/ui/TextAria";
 import { useState } from "react";
+import { countries, departments, statuses } from "../../data/additionalData";
 import {
   userSelectCountry,
   userSelectDepartment,
   userSelectStatus,
-  userSelect,
 } from "../../data/selection";
+import { useUsers } from "../../hooks/useUsers";
+import { getUniqueOptions } from "../../utility/utility";
+import type { IUser } from "../../types/user";
 function EditUSer() {
-    const [userName, setUserName] = useState("");
+    const { userList, updateUser } = useUsers();
+    const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -20,8 +23,6 @@ function EditUSer() {
         department: "",
         status: "",
     });
-
-    const selectedUser = users.find((i) => i.name === userName);
 
     const initialData = {
         name: selectedUser?.name ?? "",
@@ -31,14 +32,21 @@ function EditUSer() {
     };
 
     const isChanged =
-        JSON.stringify(formData) !== JSON.stringify(initialData);
+        formData.name.trim() !== initialData.name ||
+        formData.country !== initialData.country ||
+        formData.department !== initialData.department ||
+        formData.status !== initialData.status;
+
+    const userOptions = getUniqueOptions(
+        userList.map((user) => ({ name: user.name, value: user.name }))
+    );
 
     function handleUser(e: React.ChangeEvent<HTMLSelectElement>) {
-        const selectedUserData = users.find(
+        const selectedUserData = userList.find(
             (user) => user.name === e.target.value
         );
 
-        setUserName(e.target.value);
+        setSelectedUser(selectedUserData ?? null);
 
         setFormData({
             name: selectedUserData?.name ?? "",
@@ -49,32 +57,33 @@ function EditUSer() {
     }
 
     function handleSave() {
-        const user = users.find((i) => i.name === userName);
+        if (!selectedUser || !isChanged || !formData.name.trim()) return;
 
-        if (!user) return;
-
-        const country = users
-            .map((i) => i.country)
-            .find((i) => i.value === formData.country);
-
-        const department = users
-            .map((i) => i.department)
-            .find((i) => i.value === formData.department);
-
-        const status = users
-            .map((i) => i.status)
-            .find((i) => i.value === formData.status);
+        const country = countries.find(
+            (option) => option.value === formData.country
+        );
+        const department = departments.find(
+            (option) => option.value === formData.department
+        );
+        const status = statuses.find(
+            (option) => option.value === formData.status
+        );
 
         if (!country || !department || !status) return;
 
-        user.name = formData.name.trim();
-        user.country = country;
-        user.department = department;
-        user.status = status;
+        const updatedUser: IUser = {
+            name: formData.name.trim(),
+            country,
+            department,
+            status,
+        };
 
-        setUserName(user.name);
-
-        console.log(user);
+        updateUser(selectedUser, updatedUser);
+        setSelectedUser(updatedUser);
+        setFormData({
+            ...formData,
+            name: updatedUser.name,
+        });
     }
 
     function handleUndo() {
@@ -93,8 +102,8 @@ function EditUSer() {
                 <div>
                     <Select
                         label="User"
-                        options={userSelect}
-                        value={userName}
+                        options={userOptions}
+                        value={selectedUser?.name ?? ""}
                         onChange={handleUser}
                     />
                 </div>
@@ -165,7 +174,7 @@ function EditUSer() {
                     <Button
                         text="Save"
                         onClick={handleSave}
-                        disabled={!isChanged}
+                        disabled={!selectedUser || !isChanged || !formData.name.trim()}
                     />
                 </div>
             </section>
