@@ -7,6 +7,6 @@ export interface ISelectProps
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
   options: ISelectOption[];
-  error?: string;
+  isModal?: boolean;
   placeholder?: string;
 }
