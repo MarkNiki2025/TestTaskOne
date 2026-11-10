@@ -1,11 +1,18 @@
+
+import { useState } from "react";
 import Button from "./Button";
 import Select from "./Select";
 import Textarea from "./TextAria";
-import { useState } from "react";
+
 import { users } from "../../data/users";
-import type {IUser} from "../../types/user"
-import {statuses, departments, countries} from "../../data/additionalData"
-import type {Status,Department,Country } from "../../types/user"
+import type { IUser, Status, Department, Country } from "../../types/user";
+
+import {
+  statuses,
+  departments,
+  countries,
+} from "../../data/additionalData";
+
 import {
   userSelectCountry,
   userSelectDepartment,
@@ -16,8 +23,6 @@ interface IModalProps {
   onCancel: () => void;
 }
 
-
-
 function Modal({ onCancel }: IModalProps) {
   const [formData, setFormData] = useState({
     name: "",
@@ -26,39 +31,44 @@ function Modal({ onCancel }: IModalProps) {
     status: "",
   });
 
-function handleAdd() {
-  const country = countries.find(
-    (i:Country) => i.value === formData.country
-  );
+  function handleAdd() {
+    const country = countries.find(
+      (i: Country) => i.value === formData.country
+    );
 
-  const department = departments.find(
-    (i:Department) => i.value === formData.department
-  );
+    const department = departments.find(
+      (i: Department) => i.value === formData.department
+    );
 
-  const status = statuses.find(
-    (i:Status) => i.value === formData.status
-  );
+    const status = statuses.find(
+      (i: Status) => i.value === formData.status
+    );
 
-  if (!country || !department || !status) return;
+    if (!country || !department || !status || !formData.name.trim()) {
+      return;
+    }
 
-  const newUser: IUser = {
-    name: formData.name.trim(),
-    country,
-    department,
-    status,
-  };
-  users.push(newUser);
-  console.log(newUser);
-  console.log(users);
-}
+    const newUser: IUser = {
+      name: formData.name.trim(),
+      country,
+      department,
+      status,
+    };
+
+    users.push(newUser);
+
+    onCancel();
+  }
+
   return (
-    <div className="w-3xl h-96 flex flex-col justify-center items-center border-2">
-      <h3 className="font-karla font-medium text-[24px] tracking-[6px] text-center mb-2">
-        Add User
-      </h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-3xl rounded-xl bg-white p-8 shadow-xl flex justify-center items-center flex-col">
 
-      <div>
-        <div className="grid grid-cols-2 gap-4">
+        <h3 className="font-karla font-medium text-[24px] tracking-[6px] text-center mb-8">
+          Add User
+        </h3>
+        <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Textarea
             label="Full name"
             isModal={true}
@@ -67,7 +77,6 @@ function handleAdd() {
               setFormData({ ...formData, name: e.target.value })
             }
           />
-
           <Select
             label="Department"
             options={userSelectDepartment}
@@ -98,9 +107,10 @@ function handleAdd() {
             }
           />
         </div>
-
-        <div className="flex w-full justify-end my-10 gap-4">
+          
+        <div className="flex justify-end mt-8 gap-4  w-full">
           <Button text="Cancel" onClick={onCancel} />
+
           <Button
             text="Add"
             onClick={handleAdd}
@@ -111,6 +121,7 @@ function handleAdd() {
               !formData.status
             }
           />
+        </div>
         </div>
       </div>
     </div>
