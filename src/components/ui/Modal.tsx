@@ -4,7 +4,6 @@ import Button from "./Button";
 import Select from "./Select";
 import Textarea from "./TextAria";
 
-import { users } from "../../data/users";
 import type { IUser, Status, Department, Country } from "../../types/user";
 
 import {
@@ -21,9 +20,10 @@ import {
 
 interface IModalProps {
   onCancel: () => void;
+  onAdd?: (user: IUser) => void;
 }
 
-function Modal({ onCancel }: IModalProps) {
+function Modal({ onCancel, onAdd }: IModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     country: "",
@@ -55,7 +55,7 @@ function Modal({ onCancel }: IModalProps) {
       status,
     };
 
-    users.push(newUser);
+    onAdd?.(newUser);
 
     onCancel();
   }

@@ -1,6 +1,6 @@
 interface ButtonProps {
     text: string |  React.ReactNode;
-    onClick: () => void;
+    onClick?: () => void;
     disabled?: boolean;
 }
 

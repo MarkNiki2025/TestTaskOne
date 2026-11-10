@@ -7,8 +7,7 @@ import Modal from "../../components/ui/Modal";
 import Button from "../../components/ui/Button";
 import MultiSelect from "../../components/ui/Multiselect";
 
-import { users } from "../../data/users";
-import type { IUser } from "../../types/user";
+import { useUsers } from "../../hooks/useUsers";
 
 import {
   userSelectCountry,
@@ -26,8 +25,7 @@ const columns = [
 
 function User() {
   const [isOpen, setIsOpen] = useState(false);
-
-  const [userList, setUserList] = useState<IUser[]>([...users]);
+  const { userList, addUser, removeUser } = useUsers();
 
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
@@ -42,20 +40,6 @@ function User() {
   function handleClose() {
     setIsOpen(false);
   }
-
-    function removeUser(userToRemove: IUser) {
-    setUserList((prevUsers) =>
-        prevUsers.filter((user) => user !== userToRemove)
-    );
-
-    const userIndex = users.findIndex(
-        (user) => user === userToRemove
-    );
-
-    if (userIndex !== -1) {
-        users.splice(userIndex, 1);
-    }
-    }
 
   function handleDepartmentChange(value: string[]) {
     setSelectedDepartments(value);
@@ -206,7 +190,7 @@ function User() {
           {isOpen && (
             <Modal
               onCancel={handleClose}
-              onAdd={handleAddUser}
+              onAdd={addUser}
             />
           )}
         </div>
