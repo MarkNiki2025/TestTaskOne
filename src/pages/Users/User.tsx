@@ -76,7 +76,7 @@ function User() {
     <>
       <Header />
 
-      <div className="py-8 px-20 border-2 mx-8 my-2 rounded-xl">
+      <div className="py-8 px-20 border-2 mx-8 my-2">
         <h2 className="font-karla font-medium text-[24px] tracking-[6px] text-center">
           Users
         </h2>
@@ -164,10 +164,11 @@ function User() {
                       </span>
                     </td>
 
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 ">
                       <Button
                         text={<FaRegTrashCan />}
                         onClick={() => removeUser(user)}
+                        isSmall = {true}
                       />
                     </td>
                   </tr>
